@@ -516,10 +516,17 @@ public class TautomerWizard {
 					continue;
 				}
 				
+				boolean FlagUseMolFilterAfterProcessing = false; 
+				
 				if (molecularFilter != null)
 				{
-					if (!molecularFilter.useMolecule(molecule, records_read))
-						continue;
+					if (molecularFilter.isAromaticityInfoNeeded())
+						FlagUseMolFilterAfterProcessing = true;
+					else
+					{	
+						if (!molecularFilter.useMolecule(molecule, records_read))
+							continue;
+					}	
 				}
 				
 				
@@ -538,6 +545,10 @@ public class TautomerWizard {
 					} catch (Exception x) {
 						LOGGER.log(Level.WARNING, String.format("[Record %d] Error %s\t%s", records_read, file.getAbsoluteFile(), x.getMessage()));
 					}
+					
+					if (FlagUseMolFilterAfterProcessing)
+						if (!molecularFilter.useMolecule(molecule, records_read))
+							continue;
 					
 					if (estimateTautomersFile != null)
 					{
